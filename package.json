@@ -22,15 +22,18 @@
     "binascii": "0.0.2",
     "blockhash": "^0.2.0",
     "crypto-js": "^3.1.9-1",
+    "ffmpeg.js": "^4.2.9003",
     "hex2dec": "^1.1.1",
+    "jimp": "^0.14.0",
     "jpeg-js": "^0.4.0",
     "jssoup": "0.0.10",
     "png-js": "^1.0.0",
-    "sharp": "^0.25.3",
+    "sharp": "^0.25.4",
     "uuid": "^3.3.2",
     "xml-js": "^1.6.8"
   },
   "devDependencies": {
-    "eslint": "^6.1.0"
+    "eslint": "^6.1.0",
+    "nodemon": "^2.0.4"
   }
 }

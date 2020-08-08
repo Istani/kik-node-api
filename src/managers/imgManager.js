@@ -1,8 +1,8 @@
 const fs = require("fs"),
-    config = require("./config"),
+    config = require("../config"),
     {blockhashData} = require("blockhash"),
-    cryptoUtils = require("./cryptoUtils"),
-    sharp = require("sharp"),
+    cryptoUtils = require("../cryptoUtils"),
+    sharp = require("../noSharp"), //removed dependency on native module sharp
     axios = require("axios"),
     https = require("https");
 
@@ -27,8 +27,8 @@ class ImageManager {
             fs.mkdirSync(`./images/${this.username}/private`);
         }
     }
-    async uploadImg(imgPath){
-        const image = sharp(imgPath);
+    async uploadImg(imgPath, version){
+        const image = await sharp(imgPath); //got rid of sharp, now supports loading image urls
         const buffer = await image.jpeg().toBuffer();
         const raw = await image.jpeg().raw().toBuffer({resolveWithObject: true});
 
@@ -46,7 +46,7 @@ class ImageManager {
             "Host": "platform.kik.com",
             "Connection": "Keep-Alive",
             "Content-Length": size,
-            "User-Agent": `Kik/${config.kikVersionInfo.version} (Android 7.1.2) Content`,
+            "User-Agent": `Kik/${config(version).kikVersionInfo.version} (Android 10.0.0) Content`,
             "x-kik-jid": this.senderJid,
             "x-kik-password": cryptoUtils.generatePasskey(this.username, this.password),
             "x-kik-verification": cryptoUtils.generateImageVerification(contentId, this.appId),

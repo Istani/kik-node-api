@@ -2,13 +2,16 @@ const EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
     DataHandler = require("./handlers/dataHandler"),
     Logger = require("./logger"),
-    ImageManager = require("./imgManager"),
+    ImageManager = require("./managers/imgManager"),
+    VideoManager = require("./managers/vidManager"),
+    StickerManager = require("./managers/stickerManager"),
     sessionUtils = require("./sessionUtils"),
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
     getRoster = require("./requests/getRoster"),
     sendChatMessage = require("./requests/sendChatMessage"),
+    sendSysMsg = require("./requests/sendChatSysMsg"),
     getJidInfo = require("./requests/getJidInfo"),
     removeFriend = require("./requests/removeFriend"),
     addFriend = require("./requests/addFriend"),
@@ -17,7 +20,9 @@ const EventEmitter = require("events"),
     setGroupMember = require("./requests/setGroupMember"),
     setGroupName = require("./requests/setGroupName"),
     setProfileName = require("./requests/setProfileName"),
-    sendImage = require("./requests/sendImage");
+    sendImage = require("./requests/sendImage"),
+    sendVideo = require("./requests/sendVideo"),
+    sendSticker = require("./requests/sendSticker");
 
 module.exports = class KikClient extends EventEmitter {
     constructor(params){
@@ -79,6 +84,9 @@ module.exports = class KikClient extends EventEmitter {
                 }
                 //we have to initialize imgManager after we have the session node
                 this.imgManager = new ImageManager(this.params.username, this.params.password, this.session.node, true);
+                this.vidManager = new VideoManager(this.params.username, this.params.password, this.session.node, true);
+                this.stickerManager = new StickerManager(this.params.username, 
+                    this.params.password, this.session.node, true);
             }
         });
         this.connection.on("data", (data) => {
@@ -102,17 +110,17 @@ module.exports = class KikClient extends EventEmitter {
     getNode(){
         this.logger.log("info", "Requesting kik node");
         this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
-            this.session.androidID));
+            this.session.androidID, this.params.version));
     }
     resolveCaptcha(response){
         this.logger.log("info", `Resolving captcha with response ${response}`);
         this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
-            this.session.androidID, response));
+            this.session.androidID, this.params.version, response));
     }
     authRequest(){
         this.logger.log("info", "Sending auth request");
         this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.session.node,
-            this.session.deviceID), true);
+            this.session.deviceID, this.params.version), true);
     }
     getRoster(callback){
         this.logger.log("info", "Getting roster");
@@ -130,13 +138,50 @@ module.exports = class KikClient extends EventEmitter {
         if(callback){
             this.dataHandler.addCallback(req.id, callback);
         }
+    }    
+    sendSysMsg(jid, msg, callback){
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} message to ${jid} Content: ${msg}`);
+        let req = sendSysMsg(jid, msg, jid.endsWith("groups.kik.com"));
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
     }
     async sendImage(jid, imgPath, allowForwarding, allowSaving, callback){
         this.logger.log("info",
             `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
 
-        const image = await this.imgManager.uploadImg(imgPath);
+        const image = await this.imgManager.uploadImg(imgPath, this.params.version);
         let req = sendImage(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
+    }
+    async sendVideo(jid, vidPath, imgPath, allowForwarding, allowSaving, autoplay, loop, callback){
+        //allow skipping path if using a url instead of ffmpeg buffer
+        if (!Buffer.isBuffer(vidPath)){
+            loop = callback;  autoplay = loop;  allowSaving = autoplay; 
+            allowForwarding = allowSaving; imgPath = allowForwarding;
+        }
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} video to ${jid} Path: 
+                ${!(Buffer.isBuffer(vidPath))? vidPath: "is Buffer"}`);
+
+        const video = await this.vidManager.uploadVid(vidPath, this.params.version, this.logger, imgPath);
+        let req = sendVideo(jid, video, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving, autoplay, loop);
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
+    }
+    async sendSticker(jid, imgPath, allowForwarding, allowSaving, callback){
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
+
+        const image = await this.stickerManager.uploadImg(imgPath, this.params.version);
+        let req = sendSticker(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);
