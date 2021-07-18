@@ -15,7 +15,7 @@ var Kik = new KikClient({
     }
 });
 
-Kik.authenticate( "sinep_sdrawkcab","pokemon11");
+Kik.authenticate( "","");
 
 Kik.on("authenticated", () => {
 
