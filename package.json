@@ -18,9 +18,11 @@
   "license": "AGPL-3.0-only",
   "dependencies": {
     "axios": "^0.19.2",
+    "better-queue": "^3.8.10",
     "big-integer": "^1.6.48",
     "binascii": "0.0.2",
     "blockhash": "^0.2.0",
+    "cron": "^1.8.2",
     "crypto-js": "^3.3.0",
     "hex2dec": "^1.1.2",
     "jpeg-js": "^0.4.3",
