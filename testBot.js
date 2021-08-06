@@ -21,6 +21,9 @@ Kik.on("authenticated", () => {
 
 });
 
+Kik.on("disconnected", () => {
+    process.exit(1);
+});
 
 Kik.on("receivedgroupmsg", (group, sender, msg) => {
     console.log("group: ",group);
