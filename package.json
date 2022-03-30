@@ -12,7 +12,18 @@
   "homepage": "https://github.com/YassienW/kik-node-api#readme",
   "main": "src/kikClient.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "",
+    "build": "pwd",
+    "git-add": "git add . && git status",
+    "git-commit": "git cz",
+    "git-push": "git push",
+    "git-update": "git checkout master && git pull"
+  },
+  "config": {
+    "commitizen": {
+      "path": "../../node_modules/cz-conventional-changelog"
+    }
   },
   "author": "Yassien",
   "license": "AGPL-3.0-only",
@@ -34,6 +45,7 @@
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "eslint": "^6.8.0"
+    "eslint": "^6.8.0",
+    "cz-conventional-changelog": "^3.0.1"
   }
 }
