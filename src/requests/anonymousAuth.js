@@ -1,9 +1,9 @@
 module.exports = () => {
-    return({
-        k: {
-            _attributes: {
-                anon: "1",
-            }
-        }
-    });
+  return {
+    k: {
+      _attributes: {
+        anon: '1',
+      },
+    },
+  };
 };
