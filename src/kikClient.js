@@ -41,10 +41,10 @@ module.exports = class KikClient extends EventEmitter {
         let stdin = process.stdin,
           stdout = process.stdout;
 
-        console.log(
+        stdout.write(
           'Please resolve captcha by going to: ' +
             captchaUrl +
-            '&callback_url=https://kik.com/captcha-url'
+            '&callback_url=https://games-on-sale.de/notify'
         );
         stdout.write('Captcha response: ');
 

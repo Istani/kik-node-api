@@ -1,8 +1,8 @@
-const crypto = require('crypto'),
-  uuidv4 = require('uuid/v4'),
-  converter = require('hex2dec'),
-  bigInt = require('big-integer'),
-  cryptoUtils = module.exports;
+const crypto = require("crypto"),
+    {v4: uuidV4} = require("uuid"),
+    converter = require("hex2dec"),
+    bigInt = require("big-integer"),
+    cryptoUtils = module.exports;
 
 cryptoUtils.generatePasskey = (username, password) => {
   let sha1Password = crypto.createHash('sha1').update(password).digest('hex');
@@ -12,11 +12,11 @@ cryptoUtils.generatePasskey = (username, password) => {
     .toString('hex');
 };
 cryptoUtils.generateUUID = () => {
-  let uuid = uuidv4();
-  //remove the dashes
-  let bytes = Buffer.from(uuid.replace(/-/g, ''), 'hex');
-  let msb = bigInt(converter.hexToDec(bytes.slice(0, 8).toString('hex')));
-  let lsb = bigInt(converter.hexToDec(bytes.slice(8).toString('hex')));
+    let uuid = uuidV4();
+    //remove the dashes
+    let bytes = Buffer.from(uuid.replace(/-/g, ""), "hex");
+    let msb = bigInt(converter.hexToDec(bytes.slice(0, 8).toString("hex")));
+    let lsb = bigInt(converter.hexToDec(bytes.slice(8).toString("hex")));
 
   let iArr = [
     [3, 6],
