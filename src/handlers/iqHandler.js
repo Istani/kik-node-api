@@ -95,32 +95,22 @@ module.exports = (client, callbacks, id, data) => {
         .lookupType(`${method}Response`)
         .decode(Buffer.from(data.find('body').text, 'base64'));
 
-      let parsedUsers;
-      if (users) {
-        parsedUsers = users.map(
-          ({
-            backgroundProfilePicExtension,
-            registrationElement,
-            kinUserIdElement,
-          }) => ({
-            kinUserId: kinUserIdElement.kinUserId.id,
-            registrationTimestamp: registrationElement.creationDate.seconds.low,
-            backgroundPic:
-              backgroundProfilePicExtension &&
-              backgroundProfilePicExtension.extensionDetail.pic,
-          })
-        );
-      } else if (payloads) {
-        parsedUsers = payloads.map(({ publicGroupMemberProfile }) => ({
-          displayName:
-            publicGroupMemberProfile.displayName &&
-            publicGroupMemberProfile.displayName.displayName,
-          kinUserId: publicGroupMemberProfile.kinUserIdElement.kinUserId.id,
-          registrationTimestamp:
-            publicGroupMemberProfile.registrationElement.creationDate.seconds
-              .low,
-        }));
-      }
+            let parsedUsers;
+            if(users){
+                parsedUsers = users
+                    .map(({ backgroundProfilePicExtension, registrationElement }) => ({
+                        registrationTimestamp: registrationElement.creationDate.seconds.low,
+                        backgroundPic: backgroundProfilePicExtension &&
+                            backgroundProfilePicExtension.extensionDetail.pic
+                    }));
+            }else if(payloads){
+                parsedUsers = payloads
+                    .map(({ publicGroupMemberProfile }) => ({
+                        displayName: publicGroupMemberProfile.displayName &&
+                            publicGroupMemberProfile.displayName.displayName,
+                        registrationTimestamp: publicGroupMemberProfile.registrationElement.creationDate.seconds.low,
+                    }));
+            }
 
       let callback = callbacks.get(id);
       if (callback) {
