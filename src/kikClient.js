@@ -46,7 +46,7 @@ module.exports = class KikClient extends EventEmitter {
             captchaUrl +
             '&callback_url=https://games-on-sale.de/notify'
         );
-        stdout.write('Captcha response: ');
+        stdout.write('\nCaptcha response: ');
 
         stdin.once('data', (data) => {
           const captchaResponse = data.toString().trim();
