@@ -14,10 +14,14 @@ const versinList = { //version list Courtesy tomer8007/kik-bot-api-unofficial
     15.25: {
         "kik_version": "15.25.0.22493",
         "classes_dex_sha1_digest": "pNtboj79GGFYk9w2RbZZTxLpZUY="
+    },
+    15.60: {
+        "kik_version": "15.60.1.29587",
+        "classes_dex_sha1_digest": "FXxvP2QjSj+sXp+G1MqDdxz8Z51YjtqzFOQ7wlex0VM="
     }
 };
 
-let config = (versionNumb = 15.25) => ({
+let config = (versionNumb = 15.60) => ({
     kikVersionInfo: {
         version: versinList[versionNumb].kik_version,
         sha1Digest: versinList[versionNumb].classes_dex_sha1_digest,
