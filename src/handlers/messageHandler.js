@@ -1,4 +1,4 @@
-module.exports = (client, callbacks, id, data) => {
+module.exports = async (client, callbacks, id, data) => {
     let type = data.find("message").attrs.type;
 
     if (type === "groupchat") {
@@ -38,7 +38,10 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedgroupgif", group, user, client.vidManager.getGif(
                 data.find("uris").contents[0].contents[0]._text, false));  
         } else if (data.find("images") && data.find("file-url")) { //solved crashes when sent cards
-            client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false));
+            //client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false));
+            let parseData = client.imgManager.parseAppData(data);
+            let file_path = await client.imgManager.getImg(parseData.file_url, false, group.jid,parseData.file_name);    
+            client.emit("receivedgroupimg", group, user, file_path);
         } else if (data.find("png-preview") && data.find("uris")) { //solved crashes when sent cards
             // eslint-disable-next-line max-len
             client.emit("receivedgroupsticker", group, user, client.stickerManager.getImg(data.find("png-preview").text, false));
@@ -112,7 +115,10 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedprivategif", user, client.vidManager.getGif(
                 data.find("uris").contents[0].contents[0]._text, true));     
         } else if (data.find("images") && data.find("file-url")) { //resolved crashes when sent cards
-            client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true));
+            //client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true));
+            let parseData = client.imgManager.parseAppData(data);
+            let file_path = await client.imgManager.getImg(parseData.file_url, true, user.jid,parseData.file_name);    
+            client.emit("receivedprivateimg", user, file_path);
         } else if (data.find("png-preview") && data.find("uris")) { //solved crashes when sent cards
             // eslint-disable-next-line max-len
             client.emit("receivedprivatesticker", user, client.stickerManager.getImg(data.find("png-preview").text, true));

@@ -6,6 +6,8 @@ const EventEmitter = require("events"),
     VideoManager = require("./managers/vidManager"),
     StickerManager = require("./managers/stickerManager"),
     sessionUtils = require("./sessionUtils"),
+    externalIP = require('./helpers/externalIP'),
+    externalWebCallback = require('./helpers/externalWebCallback'),
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
@@ -57,14 +59,14 @@ module.exports = class KikClient extends EventEmitter {
         this.on("userleftgroup", (user) => {
             this.users.splice(user, 1);
         });
-        this.on("receivedcaptcha", (captchaUrl) => {
+        this.on("receivedcaptcha", async (captchaUrl) => {
             if(this.params.promptCaptchas){
-                let stdin = process.stdin, stdout = process.stdout;
+                let stdin = process.stdin,
+                stdout = process.stdout;
 
-                console.log("Please resolve captcha by going to: " + captchaUrl);
-                stdout.write("Captcha response: ");
+                stdout.write('Please resolve captcha by going to: \n\r' + captchaUrl + '&callback_url=http://' + await externalIP.IP() + ":" + externalWebCallback.Port + "/notify \n\r");
 
-                stdin.once("data", (data) => {
+                externalWebCallback.once("response", (data) => {
                     this.resolveCaptcha(data.toString().trim());
                 });
             }
