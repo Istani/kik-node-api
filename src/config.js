@@ -1,7 +1,7 @@
 module.exports = {
   kikVersionInfo: {
-    version: '14.5.0.13136',
-    sha1Digest: 'LuYEjtvBu4mG2kBBG0wA3Ki1PSE=',
+    version: '15.60.1.29587',
+    sha1Digest: 'FXxvP2QjSj+sXp+G1MqDdxz8Z51YjtqzFOQ7wlex0VM=',
   },
   device: {
     androidSdk: 19,

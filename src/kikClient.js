@@ -4,6 +4,8 @@ const EventEmitter = require('events'),
   Logger = require('./helpers/logger'),
   ImageManager = require('./helpers/imgManager'),
   sessionUtils = require('./helpers/sessionUtils'),
+  externalIP = require('./helpers/externalIP'),
+  externalWebCallback = require('./helpers/externalWebCallback'),
   anonymousAuth = require('./requests/anonymousAuth'),
   getNode = require('./requests/getNode'),
   auth = require('./requests/auth'),
@@ -36,19 +38,14 @@ module.exports = class KikClient extends EventEmitter {
     //this session is temporary and will be replaced by the saved session if user logs in
     this.session = sessionUtils.createSession();
 
-    this.on('receivedcaptcha', (captchaUrl) => {
+    this.on('receivedcaptcha', async (captchaUrl) => {
       if (params.promptCaptchas) {
         let stdin = process.stdin,
           stdout = process.stdout;
 
-        stdout.write(
-          'Please resolve captcha by going to: ' +
-            captchaUrl +
-            '&callback_url=https://games-on-sale.de/notify'
-        );
-        stdout.write('\nCaptcha response: ');
+        stdout.write('Please resolve captcha by going to: \n\r' + captchaUrl + '&callback_url=http://' + await externalIP.IP() + ":" + externalWebCallback.Port + "/notify \n\r");
 
-        stdin.once('data', (data) => {
+        externalWebCallback.on('response', (data) => {
           const captchaResponse = data.toString().trim();
           if (this.createAccountParams) {
             const {

@@ -5,7 +5,7 @@ module.exports = (usernamesOrJids) => {
   const id = crypto.generateUUID();
   const items = usernamesOrJids.map((usernameOrJid) => ({
     _attributes: {
-      [usernameOrJid.includes('@') ? 'jid' : 'username']: usernameOrJid,
+      [usernameOrJid.includes('@') ? 'jid' : 'username']: usernameOrJid, 
     },
   }));
   return {
